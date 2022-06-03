@@ -7,6 +7,7 @@ import "./@openzeppelin/contracts/security/Pausable.sol";
 import "./@openzeppelin/contracts/utils/Strings.sol";
 import "./@openzeppelin/contracts/utils/ContextMixin.sol";
 
+
 /// @custom:security-contact <security email address>
 contract ParkPics is ERC1155, IERC2981, Ownable, Pausable, ContextMixin {
 
