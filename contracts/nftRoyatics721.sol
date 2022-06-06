@@ -1,73 +1,59 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.6;
 
-import "@openzeppelin/contracts@4.6.0/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts@4.6.0/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts@4.6.0/access/Ownable.sol";
-import "@openzeppelin/contracts@4.6.0/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract MyToken is ERC721, ERC721Enumerable, Ownable {
-    using Counters for Counters.Counter;
-    uint96 royalticFreeBips;
-    address royalticReceiver;
-    Counters.Counter private _tokenIdCounter;
-    string contractURI;
+contract NFT is ERC721 {
+     address public artist;
+     address public txFeeToken;
+     uint public txFeeAmount;
+     mapping(address => uint) public excludedList;
 
-    constructor(uint96 _royalticFreeBibs, string memory _contractURI) ERC721("MyToken", "MTK") {
-    royalticFreeBips = _royalticFreeBibs;
-    contractURI = _contractURI;
-    royalticReceiver = msg.sender;
-    }
+      constructor(
+           address _artist,
+           address _txFeeToken,
+           uint _txFeeAmount
+      ) ERC721("MyNFT", "ABC") {
+           artist = _artist;
+           txFeeToken = _txFeeToken;
+           txFeeAmount = _txFeeAmount;
+           excludedList[_artist] = true;
+          _mint(artist, 0);
+      }
 
-    function safeMint(address to) public onlyOwner {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
-    }
-
-    // The following functions are overrides required by Solidity.
-
-    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-        internal
-        override(ERC721, ERC721Enumerable)
-    {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
-        return interfaceId === 02xa55205a || super.supportsInterface(interfaceId);
-    }
-
-
-    function royalticInfo (
-         uint256 _tokenId,
-         unit256 _salePrice,
-    ) external view returns (
-         address receiver,
-         unit256 royaltyAmount 
-    ) {
-            return (royalticReceiver, calculateRoyalty(_salePrice ));
-    }
-
-    function calculateRoyalty(
-           uint256 _tokenId,
-     ) pure public returns (uint256) {
-        return _tokenId * royalticFreeBips;
+     function setExcluded(address _excluded, bool status) public {
+          require(msg.sender == artist, 'artist only');
+          excludedList[_excluded] = status;
      }
 
-     function setRoyalticReceiver(address _royalticReceiver, unit96 royalticFreeBips) public onlyOwner {
-        royalticReceiver = _royalticReceiver;
-        royalticFreeBips = royalticFreeBips;
+     function transferFrom(
+          address _from,
+          address _to,
+          uint256 _tokenId
+     ) public override  {
+         require(isApprovedOrOwner(_msgSender(), tokenId), "ERC 721: transfer caller is not approved or owner");
+         if(excludedList[from] == false) {
+              _payTxFee(from);
+           }
+         _Transfer(from, to, tokenId);
+     }
+
+     function safeTransferFrom(address from,address to, uint256 tokenId, bytes memory _data) public override {
+       if(excludedList[from] == false) {
+            _payTxFee(from);
+         }
+           _safeTransfer(from, to, tokenId, _data);
 
      }
-     
-     function setContractURI(string calldata _contractURI) public onlyOwner  {
-            contractURI = _contractURI;
+
+     function _payTxFee(address _from) private {
+          IERC20 token = IERC20(txFeeToken);
+          token.transferFrom(_from, txFeeAmount);
      }
+
+
 
 }

@@ -3,17 +3,9 @@ const { ethers } = require("hardhat");
 
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
-
-    expect(await greeter.greet()).to.equal("Hello, world!");
-
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    const nft = await ethers.getContractFactory("nftRoyatics721");
+    const recipients = '0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e'
+    const nfts = await nft.deploy(17, 'https://royatics.com/');
+    await nfts.deployed();
   });
 });
