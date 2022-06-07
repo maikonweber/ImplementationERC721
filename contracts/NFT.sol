@@ -49,6 +49,7 @@ contract NFT is ERC721Enumerable, Ownable {
 
             (bool success2, ) = payable(owner()).call{
                 value: (msg.value - royality)
+                
             }("");
             require(success2);
         }
