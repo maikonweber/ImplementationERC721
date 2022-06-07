@@ -9,8 +9,10 @@ pragma solidity >=0.7.0 <0.9.0;
 contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
+    // Valor de Cada Mint (Mint Cost)
     uint256 public cost = 1 ether;
-    uint256 public maxSupply = 20;
+    // Max Supply Permitido para mintar neste contrato  
+    uint256 public maxSupply = 10000;
 
     string baseURI;
     string public baseExtension = ".json";
