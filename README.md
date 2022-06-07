@@ -1,8 +1,14 @@
-# Advanced Sample Hardhat Project
+# Implementação do Token 721 - Aleatório com Tiragem
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+Este projeto demonsta um avaçado caso de uso de hardhat, Instegração de ferramentas comumn usadas no exosystema hardhat.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+Este projeto vem com uma amostra decontract, Um teste para este contrato, um script de deploys deste  contract, e um example de uma rotina de implementação, que lista as contas. tambem esta incluso a varias de outras ferramentas, configure seu trabalho com este commandos
+
+
+- npm -i -g hardhat
+- npm -i 
+
+
 
 Try running some of the following tasks:
 
