@@ -10,13 +10,11 @@ async function main() {
   // line interface.
 
 
+    
 
   const nftFactory = await hre.ethers.getContractFactory("NFT");
-  const nft = await nftFactory.deploy(
+  const nft = await nftFactory.deploy()
     
-  );
-  console.log(nft.address);
-
 
 main().catch((error) => {
   console.error(error);
