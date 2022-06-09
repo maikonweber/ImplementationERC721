@@ -135,7 +135,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         // Função TokenURI Referencia do contrato ERC721Metadata para verificar o tokenURI do token
         //
      */
-     */
+    
     function tokenURI(uint256 tokenId)
         public
         view
@@ -189,7 +189,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      ** Função GetApproved Referencia do contrato ERC721 para verificar se o token pode ser aprovado
         // Recebe um valor numerico de 256 bytes
         */
-     */
+    
     function getApproved(uint256 tokenId)
         public
         view
@@ -211,7 +211,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         // Recebe um endereço e um valor booleano
         */
 
-     */
+    
     function setApprovalForAll(address operator, bool approved)
         public
         virtual
@@ -241,7 +241,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         // Função TransferFrom Referencia do contrato ERC721 para verificar se o token pode ser aprovado
         // Recebe um endereço e um valor numerico de 256 bytes
         */
-     */
+    
     function transferFrom(
         address from,
         address to,
