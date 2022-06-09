@@ -72,6 +72,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-balanceOf}.
+        Função BalanceOf Referencia do contrato ERC721 para verificar o saldo de um token
+        Recebe um endereço e retorna o saldo de tokens que o endereço possui
+        
      */
     function balanceOf(address owner)
         public
@@ -89,6 +92,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-ownerOf}.
+        Função OwnerOf Referencia do contrato ERC721 para verificar o dono de um token
+        Recebe um valor numerico de 256 bytes
      */
     function ownerOf(uint256 tokenId)
         public
@@ -107,6 +112,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721Metadata-name}.
+     
+        // Função Name Referencia do contrato ERC721Metadata para verificar o nome do token
+        // 
+
      */
     function name() public view virtual override returns (string memory) {
         return _name;
@@ -114,6 +123,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721Metadata-symbol}.
+        // Função Symbol Referencia do contrato ERC721Metadata para verificar o simbolo do token
+        //
      */
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
@@ -121,6 +132,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721Metadata-tokenURI}.
+        // Função TokenURI Referencia do contrato ERC721Metadata para verificar o tokenURI do token
+        //
+     */
      */
     function tokenURI(uint256 tokenId)
         public
@@ -135,6 +149,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         );
 
         string memory baseURI = _baseURI();
+        // Retorno de byte code e conversao para string
+        // Possibilita adicionar um string caso tenha algum erro na conversao conversao da url, ou se url indicar algum 
+        // erro de conversao para colocar uma url de erro.
         return
             bytes(baseURI).length > 0
                 ? string(abi.encodePacked(baseURI, tokenId.toString()))
@@ -152,7 +169,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-approve}.
-     */
+     // Função Approve Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um endereço e um valor numerico de 256 bytes
+        */
     function approve(address to, uint256 tokenId) public virtual override {
         address owner = ERC721.ownerOf(tokenId);
         require(to != owner, "ERC721: approval to current owner");
@@ -167,6 +186,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-getApproved}.
+     ** Função GetApproved Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um valor numerico de 256 bytes
+        */
      */
     function getApproved(uint256 tokenId)
         public
@@ -185,6 +207,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-setApprovalForAll}.
+        // Função SetApprovalForAll Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um endereço e um valor booleano
+        */
+
      */
     function setApprovalForAll(address operator, bool approved)
         public
@@ -196,7 +222,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-isApprovedForAll}.
-     */
+        // Função IsApprovedForAll Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um endereço e um valor booleano
+        */
+     
     function isApprovedForAll(address owner, address operator)
         public
         view
@@ -209,6 +238,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-transferFrom}.
+        // Função TransferFrom Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um endereço e um valor numerico de 256 bytes
+        */
      */
     function transferFrom(
         address from,
@@ -226,7 +258,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev See {IERC721-safeTransferFrom}.
-     */
+        // Função SafeTransferFrom Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe um endereço e um valor numerico de 256 bytes
+        */
     function safeTransferFrom(
         address from,
         address to,
@@ -268,7 +302,13 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
      *
      * Emits a {Transfer} event.
-     */
+
+        Função SafeTransferFrom Referencia do contrato ERC721 para verificar se o token pode ser aprovado
+        // Recebe dois endereçõs  e um valor numerico de 256 bytes
+        // e bytes de dados
+        */
+
+    
     function _safeTransfer(
         address from,
         address to,
@@ -277,18 +317,22 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     ) internal virtual {
         _transfer(from, to, tokenId);
         require(
+            // Retorno utiliza a função _checkOnERC721Received
             _checkOnERC721Received(from, to, tokenId, _data),
             "ERC721: transfer to non ERC721Receiver implementer"
         );
     }
 
     /**
-     * @dev Returns whether `tokenId` exists.
-     *
+     * @dev Returns whether `to` is approved for `tokenId` or the owner of the token.
      * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
      *
      * Tokens start existing when they are minted (`_mint`),
      * and stop existing when they are burned (`_burn`).
+            Função _exist recebe um uint 256 e retorna um booleano
+            se tiver um dono para aquele token o endereço tem que ser diferente de 0
+
+
      */
     function _exists(uint256 tokenId) internal view virtual returns (bool) {
         return _owners[tokenId] != address(0);
@@ -296,10 +340,12 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev Returns whether `spender` is allowed to manage `tokenId`.
+
      *
      * Requirements:
      *
      * - `tokenId` must exist.
+        Return true se o tokenId existir
      */
     function _isApprovedOrOwner(address spender, uint256 tokenId)
         internal
@@ -324,7 +370,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
      *
      * - `tokenId` must not exist.
      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
+     *  // Função Safe Mint nao permite ser mintado pelo endereço 0
      * Emits a {Transfer} event.
      */
     function _safeMint(address to, uint256 tokenId) internal virtual {
@@ -334,6 +380,8 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     /**
      * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
+    
+
      */
     function _safeMint(
         address to,
@@ -362,7 +410,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     function _mint(address to, uint256 tokenId) internal virtual {
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
-
+        
         _beforeTokenTransfer(address(0), to, tokenId);
 
         _balances[to] += 1;
@@ -431,9 +479,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
 
     /**
      * @dev Approve `to` to operate on `tokenId`
-     *
-     * Emits a {Approval} event.
+        Transferencia de tokens para o endereço
+        aprovação é feita pelo endereço do dono do token
      */
+     
     function _approve(address to, uint256 tokenId) internal virtual {
         _tokenApprovals[tokenId] = to;
         emit Approval(ERC721.ownerOf(tokenId), to, tokenId);

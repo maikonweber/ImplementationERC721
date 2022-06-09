@@ -6,7 +6,7 @@ Este projeto vem com uma amostra decontract, Um teste para este contrato, um scr
 
 - Será necessário o node 14.17 ou 16.10
 
-- npm -i -g hardhat // Para instalar o Hardhat de forma global
+- npm -i hardhat -g // Para instalar o Hardhat de forma global
 - npm -i // Para instalar todas dependecias no packge.json
 
 

@@ -16,7 +16,9 @@ contract NFT is ERC721Enumerable, Ownable {
 
     string baseURI;
     string public baseExtension = ".json";
-
+     
+    // com mais artista podem registrar um tokem
+    // mapping(address => bool) public registeredArtists;
     address public artist;
     uint256 public royalityFee;
 
@@ -57,6 +59,9 @@ contract NFT is ERC721Enumerable, Ownable {
         _safeMint(msg.sender, supply + 1);
     }
 
+    // Função tokenURI para retornar o URI do token
+    // Receber um uint do TokenId
+
     function tokenURI(uint256 tokenId)
         public
         view
@@ -71,6 +76,7 @@ contract NFT is ERC721Enumerable, Ownable {
 
         string memory currentBaseURI = _baseURI();
         return
+            // Conversao caso o tokenId seja maior que uint256
             bytes(currentBaseURI).length > 0
                 ? string(
                     abi.encodePacked(
@@ -81,26 +87,32 @@ contract NFT is ERC721Enumerable, Ownable {
                 )
                 : "";
     }
-
+    //transferFrom é um overide da função da classe ERC721
+    // Receber um address do owner, um address do to, um uint do tokenId
+    // ele tem o metodo require que verifica se é o dono do mesmo e se o tokenId existe
+    // caso a msg.valure for maior que 0 
     function transferFrom(
         address from,
         address to,
         uint256 tokenId
     ) public payable override {
+        
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: transfer caller is not owner nor approved"
         );
 
         if (msg.value > 0) {
+
             uint256 royality = (msg.value * royalityFee) / 100;
+
             _payRoyality(royality);
 
             (bool success2, ) = payable(from).call{value: msg.value - royality}(
                 ""
             );
             require(success2);
-
+            // Emite um evento de venda para from  e to com uma msg.values que eh o valor
             emit Sale(from, to, msg.value);
         }
 
@@ -141,6 +153,7 @@ contract NFT is ERC721Enumerable, Ownable {
         if (msg.value > 0) {
             uint256 royality = (msg.value * royalityFee) / 100;
             _payRoyality(royality);
+            // Emite um evento de venda para from  e to com uma msg.values que eh o valor
 
             (bool success2, ) = payable(from).call{value: msg.value - royality}(
                 ""
@@ -149,25 +162,31 @@ contract NFT is ERC721Enumerable, Ownable {
 
             emit Sale(from, to, msg.value);
         }
-
+        // Função _safeTransfer 
         _safeTransfer(from, to, tokenId, _data);
     }
 
-    // Internal functions
+    // Função interna para que possa visualizar a base Uri pertencente ao tokens
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
+    // _parRoyality é uma função interna que recebe um valor e o paga para o artista
 
+    // o _payRoyality é uma função interna que recebe um valor e o paga para o artista
+    
     function _payRoyality(uint256 _royalityFee) internal {
         (bool success1, ) = payable(artist).call{value: _royalityFee}("");
         require(success1);
     }
 
-    // Owner functions
+    // Função setBaseUri para alterar o baseURI, recebe um string na memoria
+    // do contrato e atualiza o baseURI do contrato ela é chamada apenas para os dono do contrato.
+
     function setBaseURI(string memory _newBaseURI) public onlyOwner {
         baseURI = _newBaseURI;
     }
-
+    // Função setRoyalityFee para alterar o RoyalityFee, recebe um uint256 na memori
+    // do contrato e atualiza o RoyalityFee do contrato ela é chamada apenas para os dono do contrato.
     function setRoyalityFee(uint256 _royalityFee) public onlyOwner {
         royalityFee = _royalityFee;
     }

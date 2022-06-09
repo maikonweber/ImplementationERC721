@@ -10,14 +10,18 @@ async function main() {
   // line interface.
 
 
-
   const nftFactory = await hre.ethers.getContractFactory("NFT");
   const nft = await nftFactory.deploy(
+    "NFT",
+    "NFT",
     
-  );
-  console.log(nft.address);
+  )
+ 
+  
+    
+  
 
-
+}
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
