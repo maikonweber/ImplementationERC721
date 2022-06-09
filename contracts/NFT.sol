@@ -10,7 +10,7 @@ contract NFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
 
     // Valor de Cada Mint (Mint Cost)
-    uint256 public cost = 1 ether;
+    //uint256 public cost = 1 ether;
     // Max Supply Permitido para mintar neste contrato  
     uint256 public maxSupply = 10000;
 
@@ -37,26 +37,29 @@ contract NFT is ERC721Enumerable, Ownable {
     }
 
     // Public functions
-    function mint() public payable {
+    function mint(address from,uint256 amount) public onlyOwner() {
         uint256 supply = totalSupply();
         require(supply <= maxSupply);
 
-        if (msg.sender != owner()) {
-            require(msg.value >= cost);
+        //if (msg.sender != owner()) {
+          //  require(msg.value >= cost);
 
             // Pay royality to artist, and remaining to deployer of contract
 
-            uint256 royality = (msg.value * royalityFee) / 100;
-            _payRoyality(royality);
+            //uint256 royality = (msg.value * royalityFee) / 100;
+            //_payRoyality(royality);
 
-            (bool success2, ) = payable(owner()).call{
-                value: (msg.value - royality)
+            //(bool success2, ) = payable(owner()).call{
+           
                 
-            }("");
-            require(success2);
+            //}("");
+           // require(success2);
+        
+        // Make a for for amount token and generate _safeMint to address
+        for (uint256 i = 0; i < amount; i++) {
+            _safeMint(from, supply + i);
         }
 
-        _safeMint(msg.sender, supply + 1);
     }
 
     // Função tokenURI para retornar o URI do token
@@ -95,8 +98,7 @@ contract NFT is ERC721Enumerable, Ownable {
         address from,
         address to,
         uint256 tokenId
-    ) public payable override {
-        
+    ) public payable override {   
         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: transfer caller is not owner nor approved"

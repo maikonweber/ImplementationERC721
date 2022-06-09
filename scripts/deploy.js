@@ -21,7 +21,23 @@ async function main() {
     25,
     deployer
   )
- 
+
+  const deployed  =  await nft.deployed();
+  console.log(nft.address)
+
+  const nftAddress = nft.address;
+  console.log(nftAddress)
+  const mint = await nft.mint(deployer, 50);
+  console.log(mint, "mint")
+  const balance = await nft.balanceOf(deployer)
+  console.log(balance, "balance")
+  const owner = await nft.ownerOf(1)
+  console.log(owner, "owner")
+  const transfer = await nft.safeTransferFrom(deployer, accounts[1].address, 1)
+  console.log(transfer, "transfer")
+  const balance2 = await nft.balanceOf(accounts[1].address)
+  console.log(balance2, "balance2")
+
   console.log(await nft.owner() , "Dono")
     
   
