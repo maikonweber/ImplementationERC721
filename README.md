@@ -12,11 +12,15 @@ Este projeto vem com uma amostra decontract, Um teste para este contrato, um scr
 
 *** npx hardhat node // Iniciará um rede Ganache para testar os Contratos
 *** npx hardhat test // Iniciará os test 
-*** npx hardhat run ./scripts/deploy.js
-// Faz o deploy do Contrato 
-     TODO *****
-    *** Implentar Mint com Amount 
-    *** Implementar padrao 721A para reduzir custo da mintagem em larga escala.
+*** npx hardhat run ./scripts/deploy.js // Deploy do Contrato no Rede Ganache Interna
+*** npx hardhat run ./scripts/deploy.js --network mumbai // Iniciara o Script deploy na rede mumbai
+*** npx hardhat run ./scripts/deploy.js --networdk mainnet // Iniciara o Script Deploy
+
+
+
+     TODO ****     
+    *** Implementar padrao 721A para reduzir custo da mintagem em larga escala. *** Caso seja
+    
     *** Implementar deploy do contrato com array de artistas 
     *** Implementar PaymentSplipper com artistas
         * 1 day left

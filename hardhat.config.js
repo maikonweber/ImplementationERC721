@@ -19,8 +19,11 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 });
 
 
-const secret = fs.readFileSync(path.join(__dirname, ".secret"), "utf8");
-console.log(secret);  
+const secret1 = fs.readFileSync(path.join(__dirname, ".account1"), "utf8");
+
+const secret2 = fs.readFileSync(path.join(__dirname, ".account2"), "utf8");
+
+const secret3 = fs.readFileSync(path.join(__dirname, ".account3"), "utf8");
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 const projectId = 1
@@ -38,11 +41,11 @@ module.exports = {
     },
     mumbai: {
       url: `https://polygon-mumbai.infura.io/v3/c056df343fe04736a91539be468b87ff`,
-      accounts: [secret]
+      accounts: [secret1, secret2, secret3]
     },
     mainnet : {
       url: `https://polygon-mainnet.infura.io/v3/${projectId}`,
-      accounts: [secret]
+      accounts: [secret1, secret2, secret3]
     }
   },
   gasReporter: {
