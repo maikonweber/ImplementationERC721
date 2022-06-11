@@ -4,6 +4,14 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+const fs = require("fs");
+const path = require("path");
+
+// Open .Secret file and get the private key
+const file = fs.readFileSync(path.join(__dirname, ".Secret"), "utf8");
+const privateKey = file.split("\n")[0];
+console.log("Deploying NFT contract...");
+console.logI(privateKey)
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
