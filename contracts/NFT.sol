@@ -13,7 +13,7 @@ contract NFT is ERC721Enumerable, Ownable {
     //uint256 public cost = 1 ether;
     // Max Supply Permitido para mintar neste contrato  
     uint256 public maxSupply = 10000;
-
+    uint256 public minimuPrice = 1 ether;
     string baseURI;
     string public baseExtension = ".json";
      
@@ -21,7 +21,7 @@ contract NFT is ERC721Enumerable, Ownable {
     // mapping(address => bool) public registeredArtists;
     address public artist;
     uint256 public royalityFee;
-
+    address[] public artists;
     event Sale(address from, address to, uint256 value);
 
     constructor(
@@ -29,11 +29,11 @@ contract NFT is ERC721Enumerable, Ownable {
         string memory _symbol,
         string memory _initBaseURI,
         uint256 _royalityFee,
-        address _artist
+        address[] _artist
     ) ERC721(_name, _symbol) {
         setBaseURI(_initBaseURI);
         royalityFee = _royalityFee;
-        artist = _artist;
+        artists = _artist;
     }
 
     // Public functions
@@ -126,7 +126,7 @@ contract NFT is ERC721Enumerable, Ownable {
         address to,
         uint256 tokenId
     ) public payable override {
-        if (msg.value > 0) {
+        if (msg.value > minimumPrice) {
             uint256 royality = (msg.value * royalityFee) / 100;
             _payRoyality(royality);
 
@@ -138,7 +138,7 @@ contract NFT is ERC721Enumerable, Ownable {
             emit Sale(from, to, msg.value);
         }
 
-        safeTransferFrom(from, to, tokenId, "");
+        safeTransferFrom(from, to, tokenId, _data);
     }
 
     function safeTransferFrom(
@@ -151,19 +151,23 @@ contract NFT is ERC721Enumerable, Ownable {
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: transfer caller is not owner nor approved"
         );
+        // Check if the owner of token is not a any artist into array if is artist dont use payRollalytis
+        
+        
 
-        if (msg.value > 0) {
+        if (msg.value > minimumPrice) {
             uint256 royality = (msg.value * royalityFee) / 100;
             _payRoyality(royality);
             // Emite um evento de venda para from  e to com uma msg.values que eh o valor
-
+       
+            
             (bool success2, ) = payable(from).call{value: msg.value - royality}(
                 ""
             );
             require(success2);
 
             emit Sale(from, to, msg.value);
-        }
+            }
         // Função _safeTransfer 
         _safeTransfer(from, to, tokenId, _data);
     }
