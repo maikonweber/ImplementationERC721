@@ -126,7 +126,7 @@ contract NFT is ERC721Enumerable, Ownable {
         address to,
         uint256 tokenId
     ) public payable override {
-        if (msg.value > minimumPrice) {
+        if (msg.value > minimuPrice) {
             uint256 royality = (msg.value * royalityFee) / 100;
             _payRoyality(royality);
 
@@ -138,7 +138,7 @@ contract NFT is ERC721Enumerable, Ownable {
             emit Sale(from, to, msg.value);
         }
 
-        safeTransferFrom(from, to, tokenId, _data);
+        safeTransferFrom(from, to, tokenId, "");
     }
 
     function safeTransferFrom(
@@ -155,7 +155,7 @@ contract NFT is ERC721Enumerable, Ownable {
         
         
 
-        if (msg.value > minimumPrice) {
+        if (msg.value > minimuPrice) {
             uint256 royality = (msg.value * royalityFee) / 100;
             _payRoyality(royality);
             // Emite um evento de venda para from  e to com uma msg.values que eh o valor
@@ -181,8 +181,16 @@ contract NFT is ERC721Enumerable, Ownable {
     // o _payRoyality é uma função interna que recebe um valor e o paga para o artista
     
     function _payRoyality(uint256 _royalityFee) internal {
-        (bool success1, ) = payable(artist).call{value: _royalityFee}("");
-        require(success1);
+        // Dividir a Royaltic fee pelo numero de artistas
+        uint256 artistFee = _royalityFee / artists.length;
+        // Para cada artista ele paga a Royaltic fee
+        // Require all payments to artist Complet
+        for (uint256 i = 0; i < artists.length; i++) {
+            (bool success, ) = payable(artists[i]).call{value: artistFee}(
+                ""
+            );
+            require(success);
+        }
     }
 
     // Função setBaseUri para alterar o baseURI, recebe um string na memoria
