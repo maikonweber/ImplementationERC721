@@ -90,6 +90,7 @@ async function main() {
     console.log('------------------------------------------------------------------------------')
     console.log(await nft.isApprovedForAll(accounts[1].address, nft.address))
     console.log('------------------------------------------------------------------------------')
+    console.log('------------------------------------------------------------------------------')
     const send =  await nft.transferFrom(accounts[2].address, accounts[1].address, 1)
     const t = await nft.balanceOf(accounts[2].address)
     console.log(send)
