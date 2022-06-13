@@ -2,24 +2,24 @@
 
 import "./ERC721.sol";
 import "./ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract NFT is ERC721Enumerable, Ownable {
+contract NFT is ERC721Enumerable, Ownable  {
     using Strings for uint256;
 
     // Valor de Cada Mint (Mint Cost)
     //uint256 public cost = 1 ether;
     // Max Supply Permitido para mintar neste contrato  
     uint256 public maxSupply = 10000;
-    uint256 public minimuPrice = 1 ether;
+    uint256 public minimuPrice = 2 ether;
     string baseURI;
     string public baseExtension = ".json";
-     
+    bool public isMintable = true;
     // com mais artista podem registrar um tokem
     // mapping(address => bool) public registeredArtists;
-    address public artist;
     uint256 public royalityFee;
     address[] public artists;
     event Sale(address from, address to, uint256 value);
@@ -29,41 +29,43 @@ contract NFT is ERC721Enumerable, Ownable {
         string memory _symbol,
         string memory _initBaseURI,
         uint256 _royalityFee,
-        address[] _artist
-    ) ERC721(_name, _symbol) {
+        address[] memory _artists
+    ) ERC721 (_name, _symbol) {
         setBaseURI(_initBaseURI);
         royalityFee = _royalityFee;
-        artists = _artist;
+        artists = _artists;
+        
     }
 
     // Public functions
-    function mint(address from,uint256 amount) public onlyOwner() {
-        uint256 supply = totalSupply();
-        require(supply <= maxSupply);
-
-        //if (msg.sender != owner()) {
-          //  require(msg.value >= cost);
-
-            // Pay royality to artist, and remaining to deployer of contract
-
-            //uint256 royality = (msg.value * royalityFee) / 100;
-            //_payRoyality(royality);
-
-            //(bool success2, ) = payable(owner()).call{
-           
-                
-            //}("");
-           // require(success2);
-        
-        // Make a for for amount token and generate _safeMint to address
-        for (uint256 i = 0; i < amount; i++) {
-            _safeMint(from, supply + i);
-        }
-
+    function seeArtictsArray() public view returns (address[] memory) {
+        return artists;
     }
 
-    // Função tokenURI para retornar o URI do token
-    // Receber um uint do TokenId
+    function isArtist(address _sender) public view returns (bool) {
+        // If address inside artists array, return true
+        for (uint256 i = 0; i < artists.length; i++) {
+            if (artists[i] == _sender) {
+                return true;
+            }
+        }
+    }
+
+
+    function mint(address from, uint32 amount) public {
+        uint256 supply = totalSupply();
+        require(supply <= maxSupply);
+        require(amount > 0);
+        // if msg sender is not an artist, then he can't mint
+        // if msg sender is not an artist, then he can't mint
+        require(isArtist(msg.sender));
+
+        
+        for(uint256 i = 0; i < amount; i++) {
+            _safeMint(from, supply + i);
+            // Pay the fee
+            }
+        }
 
     function tokenURI(uint256 tokenId)
         public
@@ -94,83 +96,35 @@ contract NFT is ERC721Enumerable, Ownable {
     // Receber um address do owner, um address do to, um uint do tokenId
     // ele tem o metodo require que verifica se é o dono do mesmo e se o tokenId existe
     // caso a msg.valure for maior que 0 
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable override {   
-        require(
+    
+    // function transferFrom(address from, address to, uint256 tokenId)
+    //  ERC721 (from, to, tokenId) override ERC721 and ERC721
+    function royalticTransfer(address from,  address to, uint256 tokenId) 
+        public 
+        payable
+    {
+         require(
             _isApprovedOrOwner(_msgSender(), tokenId),
             "ERC721: transfer caller is not owner nor approved"
         );
-
-        if (msg.value > 0) {
-
+        if (msg.value > minimuPrice) {
             uint256 royality = (msg.value * royalityFee) / 100;
-
             _payRoyality(royality);
 
-            (bool success2, ) = payable(from).call{value: msg.value - royality}(
-                ""
-            );
+            (bool success2, ) = payable(from).call{value: msg.value - royality}("");
             require(success2);
-            // Emite um evento de venda para from  e to com uma msg.values que eh o valor
-            emit Sale(from, to, msg.value);
+            emit Sale(from, to, msg.value);    
         }
 
         _transfer(from, to, tokenId);
+
+    }   
+
+    // See valor of royaltics fee
+    function getRoyalityFee() public view returns (uint256) {
+        return royalityFee;
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public payable override {
-        if (msg.value > minimuPrice) {
-            uint256 royality = (msg.value * royalityFee) / 100;
-            _payRoyality(royality);
-
-            (bool success2, ) = payable(from).call{value: msg.value - royality}(
-                ""
-            );
-            require(success2);
-
-            emit Sale(from, to, msg.value);
-        }
-
-        safeTransferFrom(from, to, tokenId, "");
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public payable override {
-        require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
-            "ERC721: transfer caller is not owner nor approved"
-        );
-        // Check if the owner of token is not a any artist into array if is artist dont use payRollalytis
-        
-        
-
-        if (msg.value > minimuPrice) {
-            uint256 royality = (msg.value * royalityFee) / 100;
-            _payRoyality(royality);
-            // Emite um evento de venda para from  e to com uma msg.values que eh o valor
-       
-            
-            (bool success2, ) = payable(from).call{value: msg.value - royality}(
-                ""
-            );
-            require(success2);
-
-            emit Sale(from, to, msg.value);
-            }
-        // Função _safeTransfer 
-        _safeTransfer(from, to, tokenId, _data);
-    }
 
     // Função interna para que possa visualizar a base Uri pertencente ao tokens
     function _baseURI() internal view virtual override returns (string memory) {
@@ -199,6 +153,11 @@ contract NFT is ERC721Enumerable, Ownable {
     function setBaseURI(string memory _newBaseURI) public onlyOwner {
         baseURI = _newBaseURI;
     }
+    // Function to see royalties fees and artist of contract
+    function seeRoyalties() public view returns (uint256, address[] memory) {
+        return (royalityFee, artists);
+    }
+     
     // Função setRoyalityFee para alterar o RoyalityFee, recebe um uint256 na memori
     // do contrato e atualiza o RoyalityFee do contrato ela é chamada apenas para os dono do contrato.
     function setRoyalityFee(uint256 _royalityFee) public onlyOwner {
