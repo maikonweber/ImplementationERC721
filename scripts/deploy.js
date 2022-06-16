@@ -40,7 +40,7 @@ async function main() {
 
     console.log(mint)
     console.log('------------------------------------------------------------------------------')
-    console.log(await nft._royalityFee())
+    console.log(await nft.setDefaultRoyalty(accounts[0].address, 25), "Royalties Set")
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
@@ -57,14 +57,12 @@ async function main() {
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
-    console.log(await nft.setRoyalties(1, accounts[2].address, 250))
     console.log('------------------------------------------------------------------------------')
     console.log(await nft.ownerOf(1))
     console.log('------------------------------------------------------------------------------')
-    console.log(await nft.setRoyalties(2, accounts[5].address, 25))
     // Transfer 
     console.log(
-      await nft.royaltyInfo(2, 10000) , '---' , 'Royalties'
+      await nft.royaltyInfo(1, 10000) , '---' , 'Royalties', accounts[0].address
     )
 
     // Get balance of acounts 0x5FbDB2315678afecb367f032d93F642f64180aa3
@@ -92,14 +90,16 @@ async function main() {
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
     const send =  await nft.transferFrom(accounts[2].address, accounts[1].address, 1)
+  
     const t = await nft.balanceOf(accounts[2].address)
     console.log(send)
     const th = await nft.balanceOf(accounts[1].address)
+
     console.log(t)
     console.log(th)
     console.log('------------------------------------------------------------------------------')
-      
-
+    // Get balance in ethers of deployer
+    console.log(await accounts[0].getBalance())
   }
 
 main().catch((error) => {

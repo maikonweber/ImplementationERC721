@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx hardhat run ./scripts/deploy.js"
+    "start": "REPORT_GAS=true npx hardhat run ./scripts/deploy.js"
   },
   "author": "",
   "license": "ISC",
