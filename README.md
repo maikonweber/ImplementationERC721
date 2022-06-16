@@ -1,14 +1,22 @@
 # Implementação do Token 721 - Aleatório com Tiragem
 
+#Implentaçao de ERC721A - Maior Eficientecia na mintagem de gas.
+     Para instalar os contratos 
+     $ npm install --save-dev erc721a
+     Atualiza todo os contratos para o ultimo commit 
+     git pull
+
 Este projeto demonsta um avaçado caso de uso de hardhat, Instegração de ferramentas comumn usadas no exosystema hardhat.
 
 Este projeto vem com uma amostra decontract, Um teste para este contrato, um script de deploys deste  contract, e um example de uma rotina de implementação, que lista as contas. tambem esta incluso a varias de outras ferramentas, configure seu trabalho com este commandos
 
 - Será necessário o node 14.17 ou 16.10
 
-- npm -i hardhat -g // Para instalar o Hardhat de forma global
+
+- npm i hardhat -g // Para instalar o Hardhat de forma global
 - npm -i // Para instalar todas dependecias no packge.json
 
+-- npm run start - Ira iniciar deploy de Ganache.
 
 *** npx hardhat node // Iniciará um rede Ganache para testar os Contratos
 *** npx hardhat test // Iniciará os test 
@@ -18,10 +26,6 @@ Este projeto vem com uma amostra decontract, Um teste para este contrato, um scr
 
 
 
-     TODO ****     
-    *** Implementar padrao 721A para reduzir custo da mintagem em larga escala. *** Caso seja
-    
-    *** Implementar deploy do contrato com array de artistas 
     *** Implementar PaymentSplipper com artistas
         * 1 day left
 
