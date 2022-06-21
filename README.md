@@ -1,5 +1,8 @@
 # Implementação do Token 721 - Aleatório com Tiragem
 
+
+// Ola meu celular quebrou amanha tento entrar em contato!!
+
 #Implentaçao de ERC721A - Maior Eficientecia na mintagem de gas.
      Para instalar os contratos 
      $ npm install --save-dev erc721a
