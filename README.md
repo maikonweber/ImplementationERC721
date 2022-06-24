@@ -1,13 +1,26 @@
 # Implementação do Token 721 - Aleatório com Tiragem
 
 
-// Ola meu celular quebrou amanha tento entrar em contato!!
+Vou deixar meu numero 11948964897
+To apenas com telegram por enquanto
+nao tive tempo de correr atras do numero antigo.
+podem me mandar email tambem
+m.carvalho@grouplinknetwork.com
+maikonweber@gmail.com
+Assim podemos conversar e ter um feedback para alteraçoes
+
+Preciso que me passem um feedback para terminar o contrato e fazermos a deploy dele.
+
+Sinto Muito por isso
+
 
 #Implentaçao de ERC721A - Maior Eficientecia na mintagem de gas.
      Para instalar os contratos 
      $ npm install --save-dev erc721a
      Atualiza todo os contratos para o ultimo commit 
      git pull
+
+
 
 Este projeto demonsta um avaçado caso de uso de hardhat, Instegração de ferramentas comumn usadas no exosystema hardhat.
 
