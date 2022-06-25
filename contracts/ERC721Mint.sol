@@ -15,7 +15,6 @@ import "./impl/RoyaltiesV2Impl.sol";
 contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     using Strings for uint256;
     uint96 constant _WEIGHT_VALUE = 1000000;
-
     uint256 internal _artisValue;
     address[] public artists;
     uint256 public _royalityFee;
@@ -23,14 +22,9 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     string public baseURI;
     string public baseExtension = ".json";
     uint256 public maxSupply = 10000;
-   bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+    bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
     bool public revealed = false;
-    struct royaltiesReceived {
-        address artist;
-        uint256 royalties;
-    }
-
-     event Sale(address from, address to, uint256 value);
+    event Sale(address from, address to, uint256 value);
 
     constructor (
         string memory _name,
@@ -65,12 +59,34 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
         return artistsValue;  
     } 
 
-    function transferWithRoyaltics(address from, address _to, uint256 tokenId) public payable {
-        require(msg.value > minimuPrice);
-        _artisValue  =  checkTokenRoyaltics(tokenId, msg.value);
-        
+   
+    function safeTransferFrom(
+        address from, 
+        address to,
+        uint256 tokenId
+    ) public override {
+        if(isArtist(from) == false) {
+            _payTxfree(from, to);
+        }
+
+        transferFrom(from, to, tokenId);
     }
 
+    function _payTxfree(address from, address to) public payable {
+        uint256 royality = (msg.value * _royalityFee) / 100;
+        _payRoyality(_royalityFee);
+        (bool success2, ) = payable(to).call{value: msg.value - royality}("");
+        require(success2);
+        emit Sale(from, to, msg.value);
+            
+    }
+
+    function _payRoyality(uint256 royalityFee) internal {
+        (bool sucess1, ) = payable(msg.sender).call{value: _royalityFee}("");
+        require(sucess1);
+    }  
+
+    
 
     function mint(
         address from,
