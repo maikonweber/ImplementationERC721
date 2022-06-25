@@ -14,7 +14,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 
 
-contract yourNFT is ERC721A, Ownable, ReentrancyGuard {
+contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     using Strings for uint256;
     uint96 constant _WEIGHT_VALUE = 1000000;
     uint256 internal _artisValue;
@@ -43,12 +43,6 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard {
         setCost(_minimuPrice);
     }
 
-
-    
-      function _payRoyality(uint256 _royalityFees) public payable virtual {
-        (bool success1, ) = payable(address(this)).call{value: _royalityFees}("");
-        require(success1);
-    }
 
 
     function isArtist (address sender) public view returns (bool) {
@@ -83,19 +77,20 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard {
     }
 
     function _payTxfree(address from, address to) public payable {
-        uint256 royality = (msg.value * _royalityFee) / 100;
-        _payRoyality(from, _royalityFee);
-        (bool success2, ) = payable(from).call{value: msg.value - royality}("");
-        require(success2);
         emit Sale(from, to, msg.value);
+        require(msg.value > minimuPrice);
+        uint256 royality = (msg.value * _royalityFee) / 100;
+        _payRoyality(to, _royalityFee);
+        (bool success2, ) = payable(to).call{value: msg.value - royality}("");
+        require(success2);
+        
             
     }
 
 
 
     function _payRoyality(address from, uint256 royalityFee) internal {
-    IERC20 token = IERC20(owner());
-
+    IERC20 token = IERC20(from);
     token.transferFrom(from, owner(), royalityFee);
     }  
 

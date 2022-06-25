@@ -40,7 +40,6 @@ async function main() {
 
     console.log(mint)
     console.log('------------------------------------------------------------------------------')
-    console.log(await nft.setDefaultRoyalty(accounts[0].address, 25), "Royalties Set")
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
@@ -89,10 +88,17 @@ async function main() {
     console.log(await nft.isApprovedForAll(accounts[2].address, nft.address))
     console.log('------------------------------------------------------------------------------')
     console.log('------------------------------------------------------------------------------')
-    const send =  await nft.transferFrom(accounts[2].address, accounts[1].address, 1)
-  
+    await nft['safeTransferFrom(address,address,uint256)'](
+      accounts[2].address,
+      accounts[1].address,
+      1
+    )
+    await nft['safeTransferFrom(address,address,uint256)'](
+      accounts[2].address,
+      accounts[1].address,
+      2
+    )
     const t = await nft.balanceOf(accounts[2].address)
-    console.log(send)
     const th = await nft.balanceOf(accounts[1].address)
 
     console.log(t)
