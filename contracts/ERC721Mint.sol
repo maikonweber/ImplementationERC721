@@ -19,7 +19,7 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     uint256 internal _artisValue;
     address[] public artists;
     address public txFreeToken;
-    uint256 public _royalityFee;
+    uint public _royalityFee;
     uint256 public minimuPrice;
     string public baseURI;
     string public baseExtension = ".json";
@@ -32,7 +32,7 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
         string memory _name,
         string memory _symbol,
         uint256 _minimuPrice,
-        uint256 royalityFee,
+        uint royalityFee,
         string memory _initBaseURI,
         address[] memory _artists
     ) ERC721A (_name, _symbol) {    
@@ -84,20 +84,6 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     }
 
 
-     function transferFrom(
-        address from, 
-        address to,
-        uint256 tokenId
-    ) public override {
-        if(isArtist(from) == false) {
-            _payTxfree(from, to);
-        }
-
-        transferFrom(from, to, tokenId);
-    }
-
-
-    
 
     function _payRoyality(address from, uint256 royalityFee) internal {
     IERC20 token = IERC20(owner());
