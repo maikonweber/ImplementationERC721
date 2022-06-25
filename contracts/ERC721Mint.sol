@@ -10,6 +10,7 @@ import "./LibPart.sol";
 import "./LibRoyalties2981.sol";
 import "./impl/AbstractRoyalties.sol";
 import "./impl/RoyaltiesV2Impl.sol";
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 
 contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
@@ -17,6 +18,7 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     uint96 constant _WEIGHT_VALUE = 1000000;
     uint256 internal _artisValue;
     address[] public artists;
+    address public txFreeToken;
     uint256 public _royalityFee;
     uint256 public minimuPrice;
     string public baseURI;
@@ -33,7 +35,7 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
         uint256 royalityFee,
         string memory _initBaseURI,
         address[] memory _artists
-    ) ERC721A (_name, _symbol) {
+    ) ERC721A (_name, _symbol) {    
          baseURI  = _initBaseURI;
         _royalityFee = royalityFee;
          artists = _artists;
@@ -74,16 +76,33 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
 
     function _payTxfree(address from, address to) public payable {
         uint256 royality = (msg.value * _royalityFee) / 100;
-        _payRoyality(_royalityFee);
-        (bool success2, ) = payable(to).call{value: msg.value - royality}("");
+        _payRoyality(from, _royalityFee);
+        (bool success2, ) = payable(from).call{value: msg.value - royality}("");
         require(success2);
         emit Sale(from, to, msg.value);
             
     }
 
-    function _payRoyality(uint256 royalityFee) internal {
-        (bool sucess1, ) = payable(msg.sender).call{value: _royalityFee}("");
-        require(sucess1);
+
+     function transferFrom(
+        address from, 
+        address to,
+        uint256 tokenId
+    ) public override {
+        if(isArtist(from) == false) {
+            _payTxfree(from, to);
+        }
+
+        transferFrom(from, to, tokenId);
+    }
+
+
+    
+
+    function _payRoyality(address from, uint256 royalityFee) internal {
+    IERC20 token = IERC20(owner());
+
+    token.transferFrom(from, owner(), royalityFee);
     }  
 
     
