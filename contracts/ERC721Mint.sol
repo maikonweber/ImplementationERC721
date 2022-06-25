@@ -16,7 +16,7 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     using Strings for uint256;
     uint96 constant _WEIGHT_VALUE = 1000000;
 
-
+    uint256 internal _artisValue;
     address[] public artists;
     uint256 public _royalityFee;
     uint256 public minimuPrice;
@@ -58,6 +58,17 @@ contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
 
     function seeArtictsArray() public view returns (address[] memory) {
         return artists;
+    }
+
+    function checkTokenRoyaltics(uint256 tokenId,uint256 value) public pure returns (uint256 artistsValue) {
+
+        return artistsValue;  
+    } 
+
+    function transferWithRoyaltics(address from, address _to, uint256 tokenId) public payable {
+        require(msg.value > minimuPrice);
+        _artisValue  =  checkTokenRoyaltics(tokenId, msg.value);
+        
     }
 
 
