@@ -10,125 +10,39 @@ import "./LibPart.sol";
 import "./LibRoyalties2981.sol";
 import "./impl/AbstractRoyalties.sol";
 import "./impl/RoyaltiesV2Impl.sol";
-// Import Payment Splitter
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 
 
-contract yourNFT is ERC721A, Ownable, ReentrancyGuard {
+contract yourNFT is ERC721A, Ownable, ReentrancyGuard, RoyaltiesV2Impl {
     using Strings for uint256;
     uint96 constant _WEIGHT_VALUE = 1000000;
-
-    struct RoyaltyInfo {
-        address receiver;
-        uint96 royaltyFraction;
-    }
-    mapping(uint256 => RoyaltyInfo) private _tokenRoyaltyInfo;
-    RoyaltyInfo private _defaultRoyaltyInfo;
+    uint256 internal _artisValue;
     address[] public artists;
-    uint256 public _royalityFee;
+    address public txFreeToken;
+    uint public _royalityFee;
     uint256 public minimuPrice;
     string public baseURI;
     string public baseExtension = ".json";
     uint256 public maxSupply = 10000;
     bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
     bool public revealed = false;
-     event Sale(address from, address to, uint256 value);
+    event Sale(address from, address to, uint256 value);
 
     constructor (
         string memory _name,
         string memory _symbol,
         uint256 _minimuPrice,
-        uint256 royalityFee,
+        uint royalityFee,
         string memory _initBaseURI,
         address[] memory _artists
-    ) ERC721A (_name, _symbol) {
+    ) ERC721A (_name, _symbol) {    
          baseURI  = _initBaseURI;
         _royalityFee = royalityFee;
          artists = _artists;
         setCost(_minimuPrice);
     }
 
-  function _setDefaultRoyalty(address receiver, uint96 feeNumerator)
-        internal
-    {
-        require(feeNumerator <= _feeDenominator(), "fee exceed salePrice");
-        require(receiver != address(0), "invalid receiver");
-
-        _defaultRoyaltyInfo = RoyaltyInfo(receiver, feeNumerator);
-    }
-
-    function _deleteDefaultRoyalty() internal {
-        delete _defaultRoyaltyInfo;
-    }
-
-  function transferRoyalty(address to, uint256 tokenId)
-        public
-        payable
-    {
-      require(msg.value > 0, "must transfer a non-zero amount");
-      require(msg.sender)     
-
-      _tokenRoyaltyInfo[tokenId].receiver = to;
-      _tokenRoyaltyInfo[tokenId].royaltyFraction = _WEIGHT_VALUE;
-      _tokenRoyaltyInfo[tokenId].receiver.transfer(msg.value);
-      emit Sale(to, tokenId, msg.value);
-    }
-
-        
-
-   
-    function _setTokenRoyalty(
-        uint256 tokenId,
-        address receiver,
-        uint96 feeNumerator
-    ) internal {
-        require(feeNumerator <= _feeDenominator(), "fee exceed salePrice");
-        require(receiver != address(0), "invalid parameters");
-
-        _tokenRoyaltyInfo[tokenId] = RoyaltyInfo(receiver, feeNumerator);
-    }
-
-  function _resetTokenRoyalty(uint256 tokenId) internal {
-        delete _tokenRoyaltyInfo[tokenId];
-    }
-
-
-
- function setDefaultRoyalty(address receiver, uint96 feeNumerator)
-        external
-        onlyOwner
-    {
-        _setDefaultRoyalty(receiver, feeNumerator);
-    }
-
-
-
-function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
-        external
-        view
-        returns (address, uint256)
-       {
-         RoyaltyInfo memory royalty = _tokenRoyaltyInfo[_tokenId];
-
-        if (royalty.receiver == address(0)) {
-            royalty = _defaultRoyaltyInfo;
-        }
-
-        uint256 royaltyAmount = (_salePrice * royalty.royaltyFraction) /
-            _feeDenominator();
-
-        return (royalty.receiver, royaltyAmount);
-    }
-
-       function _feeDenominator() internal pure returns (uint96) {
-        return 10000;
-    }
-
-
-      function _payRoyality(uint256 _royalityFees) public payable virtual {
-        (bool success1, ) = payable(address(this)).call{value: _royalityFees}("");
-        require(success1);
-    }
 
 
     function isArtist (address sender) public view returns (bool) {
@@ -144,7 +58,44 @@ function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
         return artists;
     }
 
- 
+    function checkTokenRoyaltics(uint256 tokenId,uint256 value) public pure returns (uint256 artistsValue) {
+
+        return artistsValue;  
+    } 
+
+   
+    function safeTransferFrom(
+        address from, 
+        address to,
+        uint256 tokenId
+    ) public override {
+        if(isArtist(from) == false) {
+            _payTxfree(from, to);
+        }
+
+        transferFrom(from, to, tokenId);
+    }
+
+    function _payTxfree(address from, address to) public payable {
+        emit Sale(from, to, msg.value);
+        require(msg.value > minimuPrice);
+        uint256 royality = (msg.value * _royalityFee) / 100;
+        _payRoyality(to, _royalityFee);
+        (bool success2, ) = payable(to).call{value: msg.value - royality}("");
+        require(success2);
+        
+            
+    }
+
+
+
+    function _payRoyality(address from, uint256 royalityFee) internal {
+    IERC20 token = IERC20(from);
+    token.transferFrom(from, owner(), royalityFee);
+    }  
+
+    
+
     function mint(
         address from,
         uint256 amount

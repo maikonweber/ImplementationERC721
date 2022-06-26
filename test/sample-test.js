@@ -1,96 +1,118 @@
 var chai = require("chai");
-const { ethers } = require("hardhat");
+const { ethers, waffle } = require("hardhat");
 const expect = chai.expect;
 const assert = chai.assert;
 
 describe("NFT TEST ", function () {
   it("Should deploy NFT contract", async function () {
-    const nftFactory = await ethers.getContractFactory("NFT");
-    
-    const nft = await nftFactory.deploy(
-      "NFT_Test",
-      "EST",
-      "https://dweb.link/ipns/gateway.pinata.cloud/ipfs/QmNQ961w7NG7rsBu6NnjyLcdTwhHNwdo9jTM8xt4ym2qg4", //IPFS
-      25,
-      "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"  // Artist Address
-      )
-
-    var nftAddress = await nft.address;
-      
-    console.log("NFT Address: " + nftAddress);
-    console.log(nft.address);
-    assert.isOk(nft.address);
+      let account =  await hre.ethers.getSigners();
+      let token, nft;
   
     })
-  it("Account Deploy Artist is Equal a Account Constructor", async function () {
-    const nftFactory = await ethers.getContractFactory("NFT");
-    const account = '0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199' // Artist
-    const nft = await nftFactory.deploy(
-      "NFT_Test",
-      "EST",
-      "https://dweb.link/ipns/gateway.pinata.cloud/ipfs/QmNQ961w7NG7rsBu6NnjyLcdTwhHNwdo9jTM8xt4ym2qg4",
+  it("Deploy Contract", async function () {
+    let account =  await hre.ethers.getSigners();
+    const NFT = await ethers.getContractFactory('yourNFT')
+    token = await NFT.deploy(
+      'NFT',
+      'NFT',
+      10,
       25,
-      account
-      )
-      const Artist = await nft.artist()
-      assert.equal(Artist, account)
-  
-    })
-  it('returns the royality Fee', async () => {
-    const nftFactory = await ethers.getContractFactory("NFT");
-    const nft = await nftFactory.deploy(
-      "NFT_Test",
-      "EST",
-      "https://dweb.link/ipns/gateway.pinata.cloud/ipfs/QmNQ961w7NG7rsBu6NnjyLcdTwhHNwdo9jTM8xt4ym2qg4",
-      25,
-      "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
-      )
-      const royalityFee = await nft.royalityFee()
-      assert.equal(royalityFee, 25)
- 
-    })
+      "https://pinata.cloud/ipfs/"
+    , [account[1].address, account[2].address, account[3].address]
+    );
 
-  it('sets the royality fee',  async () => {
-    const newRoyalityFee = 50
-    const nftFactory = await ethers.getContractFactory("NFT");
-    const nft = await nftFactory.deploy(
-      "NFT_Test",
-      "EST",
-      "https://dweb.link/ipns/gateway.pinata.cloud/ipfs/QmNQ961w7NG7rsBu6NnjyLcdTwhHNwdo9jTM8xt4ym2qg4",
-      25,
-      "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
-      )
-
-      await nft.setRoyalityFee(newRoyalityFee)
-
-      const royalityFee = await nft.royalityFee()
-
-      assert.equal(royalityFee, newRoyalityFee)
-
-    })
+    await token.deployed();
   })
 
-  describe('mint nft', async () => {
-    it('returns royalties', async () => {
-      const nftFactory = await ethers.getContractFactory("NFT");
+  it('Mint and See Artist', async function () {
+    let account =  await hre.ethers.getSigners();
+    const NFT = await ethers.getContractFactory('yourNFT')
+    token = await NFT.deploy(
+      'NFT',
+      'NFT',
+      10,
+      25,
+      "https://pinata.cloud/ipfs/"
+    , [account[1].address, account[2].address, account[3].address]
+    );
 
-      const account = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0"
+    await token.deployed();
+    console.log(token)
+   const articst = await token.seeArtictsArray()
+   console.log(articst)
+  const mint = await token.mint(account[2].address, 50)
 
-      const salePrice = ethers.utils.parseEther('1')
+  })
+  it('Transfer With Royaltics', async function ( ) {
+    let account =  await hre.ethers.getSigners();
+    const NFT = await ethers.getContractFactory('yourNFT')
+    token = await NFT.deploy(
+      'NFT',
+      'NFT',
+      10,
+      25,
+      "https://pinata.cloud/ipfs/"
+    , [account[1].address, account[2].address, account[3].address]
+    )
 
-      const nft = await nftFactory.deploy(
-        "NFT_Test",
-        "EST",
-        "https://dweb.link/ipns/gateway.pinata.cloud/ipfs/QmNQ961w7NG7rsBu6NnjyLcdTwhHNwdo9jTM8xt4ym2qg4",
-        25,
-        "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
-        )
+    await token.deployed()
+    const test = await token.connect(account[0])
+     console.log(test) 
+     const mint = await token.mint(account[2].address, 50)
+   
+     await token['safeTransferFrom(address,address,uint256)'](
+      account[2].address,
+      account[1].address,
+      1
+   )
 
-         console.log(await nft.mint())
+   await token['safeTransferFrom(address,address,uint256)'](
+    account[2].address,
+    account[1].address,
+    3
+ )
+ await token['safeTransferFrom(address,address,uint256)'](
+  account[2].address,
+  account[1].address,
+  2
+)
+await token['safeTransferFrom(address,address,uint256)'](
+  account[2].address,
+  account[1].address,
+  5
+)
+await token['safeTransferFrom(address,address,uint256)'](
+  account[2].address,
+  account[1].address,
+  6
+)
+await token['safeTransferFrom(address,address,uint256)'](
+  account[2].address,
+  account[1].address,
+  7
+)
+await token['safeTransferFrom(address,address,uint256)'](
+  account[2].address,
+  account[1].address,
+  8
+)
 
-      })
-      
 
-       
 
+
+
+
+
+     const amount = await token.balanceOf(account[1].address)
+     console.log(amount)
+    const ow = await token.owner()
+    const balance1 = await token.balanceOf(ow)
+    console.log(balance1)
+    const provider = waffle.provider;
+      const balanceETH = await provider.getBalance('0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9');
+      console.log(balanceETH)
     })
+
+
+  })
+
